@@ -25,6 +25,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
             $studentId = $row['id_student'];
             $fullName = $row['nom_student'] . ' ' . $row['prenom_student'];
             $level = $row['Year'];
+            $groupID = $row['groupId'];
         }
     } else {
         die("No records found for the provided email and password");
@@ -110,7 +111,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
             <span class="nav-link">Navigation</span>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="index.php">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
@@ -118,7 +119,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="pages/changeprogress.html">
+            <a class="nav-link" href="updateprogress.php">
               <span class="menu-icon">
                 <i class="mdi mdi-chart-bar"></i>
               </span>
@@ -126,7 +127,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="uploadcertificate.php">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
