@@ -1,83 +1,43 @@
 <?php
 session_start();
 
-include_once "config.php"; // Adjust the path as needed
+
+include_once "config.php";
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-    // Retrieve username and password from session variables
-    $username = $_SESSION['login_email'];
+    
+    $email = $_SESSION['login_email'];
     $password = $_SESSION['login_password'];
 
-    // Fetch admin information based on username and password
-    $sql = "SELECT username, password
-            FROM admin
-            WHERE username = ? AND password = ?";
     
-    $stmt = $db->prepare($sql);
+    $sql = "SELECT id_student, nom_student, prenom_student, Year, groupId
+            FROM Student
+            WHERE email = '$email' AND password = '$password'";
 
-    if ($stmt) {
-        $stmt->bind_param("ss", $username, $password);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    $result = $db->query($sql); 
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $adminId = $row['username'];
-                $password = $row['password'];
-                // Retrieve other columns as needed
-            }
-        } else {
-            die("No records found for the provided username and password");
-        }
-
-        $stmt->close();
-    } else {
-        die("Query preparation failed: " . $db->error);
+    if (!$result) {
+        die("Query failed: " . $db->error);
     }
 
-    // Close the database connection (moved outside of the if statement)
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $studentId = $row['id_student'];
+            $fullName = $row['nom_student'] . ' ' . $row['prenom_student'];
+            $level = $row['Year'];
+        }
+    } else {
+        die("No records found for the provided email and password");
+    }
+
+    
     $db->close();
 } else {
-    // Redirect to the login page if session variables are not set
+
     header("location: login.php");
     exit();
 }
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  // Check if form is submitted
-
-  // Retrieve form data
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-  $groupId = $_POST['groupId'];
-  $year = $_POST['year'];
-  $nom = $_POST['nom'];
-  $prenom = $_POST['prenom'];
-
-  // Insert new student into the database
-  $sql = "INSERT INTO students (email, password, GroupId, Year, nom_student, prenom_student) VALUES (?, ?, ?, ?, ?, ?)";
-  
-  $stmt = $db->prepare($sql);
-
-  if ($stmt) {
-      $stmt->bind_param("ssisss", $email, $password, $groupId, $year, $nom, $prenom);
-      $stmt->execute();
-
-      // Check if the insertion was successful
-      if ($stmt->affected_rows > 0) {
-          echo "New student added successfully!";
-      } else {
-          echo "Error adding new student: " . $stmt->error;
-      }
-
-      $stmt->close();
-  } else {
-      die("Query preparation failed: " . $db->error);
-  }
-}
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -116,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="profile-desc">
               
                 <div class="profile-name">
-                  <h5 class="mb-0 font-weight-normal"><?php echo $adminId; ?></h5>
+                  <h5 class="mb-0 font-weight-normal"><?php echo $fullName; ?></h5>
                 </div>
   
               <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
@@ -157,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="updateprogress.php">
+            <a class="nav-link" href="pages/changeprogress.html">
               <span class="menu-icon">
                 <i class="mdi mdi-chart-bar"></i>
               </span>
@@ -165,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="uploadcertificate.php">
+            <a class="nav-link" href="index.html">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
@@ -198,7 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                   <div class="navbar-profile">
-                    <h5 class="mb-0 font-weight-normal"><?php echo $adminId; ?></h5>
+                    <h5 class="mb-0 font-weight-normal"><?php echo $fullName; ?></h5>
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
                 </a>
@@ -238,83 +198,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </nav>
         <!-- partial -->
         <div class="main-panel">
-  <div class="content-wrapper">
-
-    <!-- Existing content -->
-
-    <!-- New content: Form for entering a new student -->
-    <div class="row">
-      <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title">Add New Student</h4>
-
-            <!-- Student Form -->
-            <form action="process_student.php" method="post"> <!-- Replace "process_student.php" with your actual form processing script -->
-
-              <!-- Email -->
-              <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update Progress</h4>
+                  
+                  <!-- Form to update progress -->
+                  <form method="post" action="process_update_progress.php" enctype="multipart/form-data">
+                    <div class="form-group">
+                      <label for="image">Upload Image:</label>
+                      <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="progressText">Progress Text:</label>
+                      <input type="text" class="form-control" id="progressText" name="progressText" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </form>
+                  <!-- End Form -->
+                </div>
               </div>
-
-              <!-- Password -->
-              <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-              </div>
-
-              <!-- GroupId -->
-              <div class="form-group">
-                <label for="groupId">Group ID:</label>
-                <input type="text" class="form-control" id="groupId" name="groupId" required>
-              </div>
-
-              <!-- Year -->
-              <div class="form-group">
-                <label for="year">Year:</label>
-                <input type="text" class="form-control" id="year" name="year" required>
-              </div>
-
-              <!-- Nom (Last Name) -->
-              <div class="form-group">
-                <label for="nom">Last Name:</label>
-                <input type="text" class="form-control" id="nom" name="nom" required>
-              </div>
-
-              <!-- Prenom (First Name) -->
-              <div class="form-group">
-                <label for="prenom">First Name:</label>
-                <input type="text" class="form-control" id="prenom" name="prenom" required>
-              </div>
-
-              <!-- Submit button -->
-              <button type="submit" class="btn btn-primary">Submit</button>
-
-            </form>
-            <!-- End Student Form -->
-
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- End New content: Form for entering a new student -->
-
-    <!-- Existing content -->
-
-  </div>
-
-  <!-- Existing content -->
-
-  <!-- partial:partials/_footer.html -->
-  <footer class="footer">
-    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-      <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
-    </div>
-  </footer>
-  <!-- partial -->
-
-</div>
+            
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
         <!-- main-panel ends -->
       </div>
       <!-- page-body-wrapper ends -->

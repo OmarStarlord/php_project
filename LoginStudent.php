@@ -29,7 +29,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+</head>
 <body>
     <!-- Add the form tag and method attribute -->
     <form method="post" action="">
@@ -39,3 +43,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
 </body>
 </html>
+
