@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['login_email'] = $myemail;
         $_SESSION['login_password'] = $mypassword;
 
-        header("location: studentdashboard/real/index.php");
+        header("location: studentdashboard/index.php");
         exit(); // Make sure to exit after the header to prevent further execution
     } else {
         $error = "Your Login Email or Password is invalid";

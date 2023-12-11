@@ -1,78 +1,32 @@
 <?php
-
-class Connection {
-    private $servername;
-    private $username;
-    private $password;
-    private $dbname;
-    private $conn;
-
-    public function __construct($servername, $username, $password, $dbname) {
-        $this->servername = $servername;
-        $this->username = $username;
-        $this->password = $password;
-        $this->dbname = $dbname;
-    }
-
-    public function connect() {
-        try {
-            $this->conn = new PDO("mysql:host={$this->servername};dbname={$this->dbname}", $this->username, $this->password);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
-        }
-    }
-
-    public function disconnect() {
-        $this->conn = null;
-    }
-
-    public function executeQuery($query, $params = []) {
-        try {
-            $stmt = $this->conn->prepare($query);
-
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-
-            $stmt->execute();
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            die("Error in SQL query: " . $e->getMessage());
-        }
-    }
-}
-
-// Usage example:
-
-$servername = "localhost";
-$username = "Omar";
-$password = "omar";
-$dbname = "platformcoursera";
-
-$connection = new Connection($servername, $username, $password, $dbname);
-$connection->connect();
+include("config.php");
+session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST["name"];
-    $password = $_POST["password"];
+    // email and password sent from form
+    $myemail = mysqli_real_escape_string($db, $_POST['name']);
+    $mypassword = mysqli_real_escape_string($db, $_POST['password']);
 
-    $query = "SELECT * FROM admins WHERE AdminID = :name AND Password = :password";
-    $params = [':name' => $name, ':password' => $password];
+    $sql = "SELECT * FROM admin WHERE username = '$myemail' AND password = '$mypassword'";
+    $result = mysqli_query($db, $sql);
 
-    $result = $connection->executeQuery($query, $params);
+    if (!$result) {
+        die("Query failed: " . mysqli_error($db));
+    }
 
-    if (count($result) > 0) {
-        header("Location: admindashboard/admin_dashboard.php");
-        exit();
+    $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+
+    if ($row) {
+        // Store email and password in session variables
+        $_SESSION['login_email'] = $myemail;
+        $_SESSION['login_password'] = $mypassword;
+
+        header("location: admindashboard/index.php");
+        exit(); // Make sure to exit after the header to prevent further execution
     } else {
-        echo "Invalid admin credentials.";
+        $error = "Your Username or Password is invalid";
     }
 }
-
-$connection->disconnect();
-
 ?>
 
 <!DOCTYPE html>
