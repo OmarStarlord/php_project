@@ -1,0 +1,81 @@
+Professor Table:
+
+sql
+Copy code
+CREATE TABLE Professor (
+    id_prof INT PRIMARY KEY,
+    nom_prof VARCHAR(255),
+    prenom_prof VARCHAR(255),
+    password VARCHAR(255),
+    email VARCHAR(255),
+    role VARCHAR(50) CHECK (role IN ('admin', 'prof_normal'))
+);
+Matiere (Subject) Table:
+
+sql
+Copy code
+CREATE TABLE Matiere (
+    id_mat INT PRIMARY KEY,
+    name_mat VARCHAR(255)
+);
+Group Table:
+
+sql
+Copy code
+CREATE TABLE Group (
+    GroupId INT PRIMARY KEY,
+    Intitule_grp VARCHAR(255)
+);
+Filiere Table:
+
+sql
+Copy code
+CREATE TABLE Filiere (
+    id_filiere INT PRIMARY KEY,
+    name VARCHAR(255)
+);
+Student Table:
+
+sql
+Copy code
+CREATE TABLE Student (
+    id_student INT PRIMARY KEY,
+    nom_student VARCHAR(255),
+    password VARCHAR(255),
+    GroupId INT,
+    Year INT,
+    prenom_student VARCHAR(255),
+    FOREIGN KEY (GroupId) REFERENCES Group(GroupId)
+);
+Courses Table:
+
+sql
+Copy code
+CREATE TABLE Courses (
+    id1_course INT PRIMARY KEY,
+    CourseName VARCHAR(255),
+    start_date DATE,
+    end_date DATE
+);
+Enrolled Table:
+
+sql
+Copy code
+CREATE TABLE Enrolled (
+    StudentId INT,
+    CourseName VARCHAR(255),
+    date DATE,
+    FOREIGN KEY (StudentId) REFERENCES Student(id_student),
+    FOREIGN KEY (CourseName) REFERENCES Courses(CourseName)
+);
+Progress Table:
+
+sql
+Copy code
+CREATE TABLE Progress (
+    ProgressId INT PRIMARY KEY,
+    StudentFullName VARCHAR(255),
+    CourseId INT,
+    PercentageReached DECIMAL(5, 2),
+    FOREIGN KEY (CourseId) REFERENCES Courses(id1_course)
+);
