@@ -7,8 +7,7 @@ CREATE TABLE Professor (
     nom_prof VARCHAR(255),
     prenom_prof VARCHAR(255),
     password VARCHAR(255),
-    email VARCHAR(255),
-    role VARCHAR(50) CHECK (role IN ('admin', 'prof_normal'))
+    email VARCHAR(255)
 );
 Matiere (Subject) Table:
 
@@ -64,7 +63,6 @@ Copy code
 CREATE TABLE Enrolled (
     StudentId INT,
     CourseName VARCHAR(255),
-    date DATE,
     FOREIGN KEY (StudentId) REFERENCES Student(id_student),
     FOREIGN KEY (CourseName) REFERENCES Courses(CourseName)
 );
@@ -78,4 +76,14 @@ CREATE TABLE Progress (
     CourseId INT,
     PercentageReached DECIMAL(5, 2),
     FOREIGN KEY (CourseId) REFERENCES Courses(id1_course)
+);
+
+admin
+Copy code
+CREATE TABLE admin (
+    username INT PRIMARY KEY,
+    nom_admin VARCHAR(255),
+    prenom_admin VARCHAR(255),
+    password VARCHAR(255),
+    email VARCHAR(255)
 );
