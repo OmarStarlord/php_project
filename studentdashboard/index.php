@@ -38,6 +38,21 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
     header("location: login.php");
     exit();
 }
+
+
+if (isset($_GET['logout'])) {
+  // Unset all session variables
+  $_SESSION = array();
+
+  // Destroy the session
+  session_destroy();
+
+  // Redirect to the login page
+  header("location: login.php");
+  exit();
+}
+
+
 ?>
 
 
@@ -178,16 +193,16 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
+                  <a class="dropdown-item preview-item" href="?logout=true">
                     <div class="preview-thumbnail">
-                      <div class="preview-icon bg-dark rounded-circle">
-                        <i class="mdi mdi-logout text-danger"></i>
-                      </div>
+                        <div class="preview-icon bg-dark rounded-circle">
+                            <i class="mdi mdi-logout text-danger"></i>
+                        </div>
                     </div>
                     <div class="preview-item-content">
-                      <p class="preview-subject mb-1">Log out</p>
+                        <p class="preview-subject mb-1">Log out</p>
                     </div>
-                  </a>
+              </a>
                   <div class="dropdown-divider"></div>
                   <p class="p-3 mb-0 text-center">Advanced settings</p>
                 </div>

@@ -169,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
-              <span class="menu-title">Add Course</span>
+              <span class="menu-title">Add new Course</span>
             </a>
           </li>
         </ul>
@@ -244,60 +244,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- New content: Form for entering a new student -->
     <div class="row">
-      <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title">Add New Student</h4>
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                <h4 class="card-title">Add New Professor</h4>
 
-            <!-- Student Form -->
-            <form action="process_student.php" method="post"> <!-- Replace "process_student.php" with your actual form processing script -->
+                <!-- Professor Form -->
+                <form action="process_professor.php" method="post"> <!-- Replace "process_professor.php" with your actual form processing script -->
 
-              <!-- Email -->
-              <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-              </div>
+                    <!-- Last Name -->
+                    <div class="form-group">
+                        <label for="nom">Last Name:</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    </div>
 
-              <!-- Password -->
-              <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-              </div>
+                    <!-- First Name -->
+                    <div class="form-group">
+                        <label for="prenom">First Name:</label>
+                        <input type="text" class="form-control" id="prenom" name="prenom" required>
+                    </div>
 
-              <!-- GroupId -->
-              <div class="form-group">
-                <label for="groupId">Group ID:</label>
-                <input type="text" class="form-control" id="groupId" name="groupId" required>
-              </div>
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
 
-              <!-- Year -->
-              <div class="form-group">
-                <label for="year">Year:</label>
-                <input type="text" class="form-control" id="year" name="year" required>
-              </div>
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
 
-              <!-- Nom (Last Name) -->
-              <div class="form-group">
-                <label for="nom">Last Name:</label>
-                <input type="text" class="form-control" id="nom" name="nom" required>
-              </div>
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
 
-              <!-- Prenom (First Name) -->
-              <div class="form-group">
-                <label for="prenom">First Name:</label>
-                <input type="text" class="form-control" id="prenom" name="prenom" required>
-              </div>
+                </form>
+                <!-- End Professor Form -->
 
-              <!-- Submit button -->
-              <button type="submit" class="btn btn-primary">Submit</button>
-
-            </form>
-            <!-- End Student Form -->
-
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
+
     <!-- End New content: Form for entering a new student -->
 
     <!-- Existing content -->
