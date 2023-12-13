@@ -41,7 +41,6 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
     header("location: login.php");
     exit();
 }
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   // Retrieve form data
@@ -51,14 +50,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $year = $_POST['year'];
   $nom = $_POST['nom'];
   $prenom = $_POST['prenom'];
+  $academicYear = $_POST['academicYear']; // assuming this is the value for AcademicYear
+  $filiereId = $_POST['filiereId']; // assuming this is the value for FiliereId
 
   // Insert new student into the database
-  $sql = "INSERT INTO student (email, password, GroupId, Year, nom_student, prenom_student) VALUES (?, ?, ?, ?, ?, ?)";
-  
+  $sql = "INSERT INTO student (email, password, GroupId, Year, nom_student, prenom_student, AcademicYear, FiliereId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
   $stmt = $db->prepare($sql);
 
   if ($stmt) {
-      $stmt->bind_param("ssisss", $email, $password, $groupId, $year, $nom, $prenom);
+      $stmt->bind_param("ssisssii", $email, $password, $groupId, $year, $nom, $prenom, $academicYear, $filiereId);
       $stmt->execute();
 
       // Check if the insertion was successful
@@ -73,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       die("Query preparation failed: " . $db->error);
   }
 }
+
 ?>
 
 
@@ -248,49 +250,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h4 class="card-title">Add New Student</h4>
 
             <!-- Student Form -->
-            <form method="post"> <!-- Replace "process_student.php" with your actual form processing script -->
+<form method="post" action="process_student.php"> <!-- Replace "process_student.php" with your actual form processing script -->
 
-              <!-- Email -->
-              <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-              </div>
+<!-- Email -->
+<div class="form-group">
+  <label for="email">Email:</label>
+  <input type="email" class="form-control" id="email" name="email" required>
+</div>
 
-              <!-- Password -->
-              <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-              </div>
+<!-- Password -->
+<div class="form-group">
+  <label for="password">Password:</label>
+  <input type="password" class="form-control" id="password" name="password" required>
+</div>
 
-              <!-- GroupId -->
-              <div class="form-group">
-                <label for="groupId">Group ID:</label>
-                <input type="text" class="form-control" id="groupId" name="groupId" required>
-              </div>
+<!-- GroupId -->
+<div class="form-group">
+  <label for="groupId">Group ID:</label>
+  <input type="text" class="form-control" id="groupId" name="groupId" required>
+</div>
 
-              <!-- Year -->
-              <div class="form-group">
-                <label for="year">Year:</label>
-                <input type="text" class="form-control" id="year" name="year" required>
-              </div>
+<!-- Year -->
+<div class="form-group">
+  <label for="year">Year:</label>
+  <input type="text" class="form-control" id="year" name="year" required>
+</div>
 
-              <!-- Nom (Last Name) -->
-              <div class="form-group">
-                <label for="nom">Last Name:</label>
-                <input type="text" class="form-control" id="nom" name="nom" required>
-              </div>
+<!-- Nom (Last Name) -->
+<div class="form-group">
+  <label for="nom">Last Name:</label>
+  <input type="text" class="form-control" id="nom" name="nom" required>
+</div>
 
-              <!-- Prenom (First Name) -->
-              <div class="form-group">
-                <label for="prenom">First Name:</label>
-                <input type="text" class="form-control" id="prenom" name="prenom" required>
-              </div>
+<!-- Prenom (First Name) -->
+<div class="form-group">
+  <label for="prenom">First Name:</label>
+  <input type="text" class="form-control" id="prenom" name="prenom" required>
+</div>
 
-              <!-- Submit button -->
-              <button type="submit" class="btn btn-primary">Submit</button>
+<!-- FiliereId (Dropdown for selecting Filiere) -->
+<div class="form-group">
+  <label for="filiereId">Filiere:</label>
+  <select class="form-control" id="filiereId" name="filiereId" required>
+    <option value="1">Ingénierie Informatique et Réseaux</option>
+    <option value="2">Ingénierie Financière et Audit</option>
+    <option value="3">Génie Industriel</option>
+    <option value="4">Génie Civil, Bâtiments et Travaux Publics (BTP)</option>
+    <option value="5">Ingénierie Automatismes et Informatique Industrielle</option>
+    <!-- Add more options as needed -->
+  </select>
+</div>
 
-            </form>
-            <!-- End Student Form -->
+<!-- Submit button -->
+<button type="submit" class="btn btn-primary">Submit</button>
+
+</form>
+<!-- End Student Form -->
+  
 
           </div>
         </div>

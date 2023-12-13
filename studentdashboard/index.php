@@ -10,7 +10,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
     $password = $_SESSION['login_password'];
 
     // Fetch student information based on email and password
-    $sql = "SELECT id_student, nom_student, prenom_student, Year, groupId
+    $sql = "SELECT id_student, nom_student, prenom_student, AcademicYear, groupId
             FROM Student
             WHERE email = '$email' AND password = '$password'";
 
@@ -24,8 +24,9 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         while ($row = $result->fetch_assoc()) {
             $studentId = $row['id_student'];
             $fullName = $row['nom_student'] . ' ' . $row['prenom_student'];
-            $level = $row['Year'];
+            $level = $row['AcademicYear'];
             $groupID = $row['groupId'];
+            
         }
     } else {
         die("No records found for the provided email and password");
@@ -85,8 +86,8 @@ if (isset($_GET['logout'])) {
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar" aria-label="Sidebar Navigation">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="index.html"><img src="assets/images/logo.svg" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="assets/images/logo-mini.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo" href="index.php"><img src="assets/images/logo.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo-mini" href="index.php"><img src="assets/images/logo.svg" alt="logo" /></a>
         </div>
         <ul class="nav">
           <li class="nav-item profile">
@@ -236,7 +237,7 @@ if (isset($_GET['logout'])) {
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                   <div class="card">
                       <div class="card-body">
-                          <p class="mb-0 font-weight-normal">Level: <?php echo $level; ?></p>
+                          <p class="mb-0 font-weight-normal">Academic Year: <?php echo $level; ?></p>
                       </div>
                   </div>
               </div>

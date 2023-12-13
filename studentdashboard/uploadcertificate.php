@@ -10,7 +10,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
     $password = $_SESSION['login_password'];
 
     
-    $sql = "SELECT id_student, nom_student, prenom_student, Year, groupId
+    $sql = "SELECT id_student, nom_student, prenom_student, AcademicYear, groupId
             FROM Student
             WHERE email = '$email' AND password = '$password'";
 
@@ -24,7 +24,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         while ($row = $result->fetch_assoc()) {
             $studentId = $row['id_student'];
             $fullName = $row['nom_student'] . ' ' . $row['prenom_student'];
-            $level = $row['Year'];
+            $level = $row['AcademicYear'];
         }
     } else {
         die("No records found for the provided email and password");
