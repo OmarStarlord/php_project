@@ -48,7 +48,7 @@ if (isset($_GET['logout'])) {
   session_destroy();
 
   // Redirect to the login page
-  header("location: login.php");
+  header("location: ../LoginStudent.php");
   exit();
 }
 

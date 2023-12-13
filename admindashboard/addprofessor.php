@@ -35,45 +35,43 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         die("Query preparation failed: " . $db->error);
     }
 
-    // Close the database connection (moved outside of the if statement)
-    $db->close();
+    
 } else {
     // Redirect to the login page if session variables are not set
-    header("location: login.php");
+    header("location: ../LoginAdmin.php");
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  // Check if form is submitted
 
-  // Retrieve form data
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-  $groupId = $_POST['groupId'];
-  $year = $_POST['year'];
-  $nom = $_POST['nom'];
-  $prenom = $_POST['prenom'];
+if ($_SERVER["REQUEST_METHOD"] == "POST"){
+    // Retrieve form data
+    $nom = trim($_POST["nom"]);
+    $prenom = trim($_POST["prenom"]);
+    $password = trim($_POST["password"]);
+    $email = trim($_POST["email"]);
 
-  // Insert new student into the database
-  $sql = "INSERT INTO students (email, password, GroupId, Year, nom_student, prenom_student) VALUES (?, ?, ?, ?, ?, ?)";
-  
-  $stmt = $db->prepare($sql);
+    // Prepare an INSERT statement
+    $sql = "INSERT INTO professor (nom_prof , prenom_prof , password, email) VALUES (?, ?, ?, ?)";
 
-  if ($stmt) {
-      $stmt->bind_param("ssisss", $email, $password, $groupId, $year, $nom, $prenom);
-      $stmt->execute();
+    $stmt = $db->prepare($sql);
 
-      // Check if the insertion was successful
-      if ($stmt->affected_rows > 0) {
-          echo "New student added successfully!";
-      } else {
-          echo "Error adding new student: " . $stmt->error;
-      }
+    if ($stmt) {
+        // Bind variables to the prepared statement as parameters
+        $stmt->bind_param("ssss", $nom, $prenom, $password, $email);
 
-      $stmt->close();
-  } else {
-      die("Query preparation failed: " . $db->error);
-  }
+        // Attempt to execute the prepared statement
+        if ($stmt->execute()) {
+            // Redirect to the login page
+            header("location: index.php");
+            exit();
+        } else {
+            die("Something went wrong. Please try again later.");
+        }
+
+       
+    } else {
+        die("Query preparation failed: " . $db->error);
+    }
 }
 ?>
 
@@ -250,7 +248,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h4 class="card-title">Add New Professor</h4>
 
                 <!-- Professor Form -->
-                <form action="process_professor.php" method="post"> <!-- Replace "process_professor.php" with your actual form processing script -->
+                <form method="post"> <!-- Replace "process_professor.php" with your actual form processing script -->
 
                     <!-- Last Name -->
                     <div class="form-group">

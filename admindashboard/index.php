@@ -35,46 +35,14 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         die("Query preparation failed: " . $db->error);
     }
 
-    // Close the database connection (moved outside of the if statement)
-    $db->close();
+    
 } else {
     // Redirect to the login page if session variables are not set
     header("location: login.php");
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  // Check if form is submitted
 
-  // Retrieve form data
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-  $groupId = $_POST['groupId'];
-  $year = $_POST['year'];
-  $nom = $_POST['nom'];
-  $prenom = $_POST['prenom'];
-
-  // Insert new student into the database
-  $sql = "INSERT INTO students (email, password, GroupId, Year, nom_student, prenom_student) VALUES (?, ?, ?, ?, ?, ?)";
-  
-  $stmt = $db->prepare($sql);
-
-  if ($stmt) {
-      $stmt->bind_param("ssisss", $email, $password, $groupId, $year, $nom, $prenom);
-      $stmt->execute();
-
-      // Check if the insertion was successful
-      if ($stmt->affected_rows > 0) {
-          echo "New student added successfully!";
-      } else {
-          echo "Error adding new student: " . $stmt->error;
-      }
-
-      $stmt->close();
-  } else {
-      die("Query preparation failed: " . $db->error);
-  }
-}
 ?>
 
 
@@ -216,7 +184,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
+                  <a class="dropdown-item preview-item" href="../LoginAdmin.php">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
@@ -250,7 +218,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h4 class="card-title">Add New Student</h4>
 
             <!-- Student Form -->
-            <form action="process_student.php" method="post"> <!-- Replace "process_student.php" with your actual form processing script -->
+            <form method="post"> <!-- Replace "process_student.php" with your actual form processing script -->
 
               <!-- Email -->
               <div class="form-group">

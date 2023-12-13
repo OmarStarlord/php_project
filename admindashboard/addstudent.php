@@ -35,36 +35,43 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         die("Query preparation failed: " . $db->error);
     }
 
-    // Close the database connection (moved outside of the if statement)
-    $db->close();
+    
 } else {
     // Redirect to the login page if session variables are not set
     header("location: login.php");
     exit();
 }
-// ADD COURSE to database 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve course information from form submission
-    $courseName = $_POST['courseName'];
-    $startDate = $_POST['startDate'];
-    $endDate = $_POST['endDate'];
 
-    // Insert course information into database
-    $sql = "INSERT INTO courses (courseName, startDate, endDate)
-            VALUES (?, ?, ?)";
-    
-    $stmt = $db->prepare($sql);
+  // Retrieve form data
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+  $groupId = $_POST['groupId'];
+  $year = $_POST['year'];
+  $nom = $_POST['nom'];
+  $prenom = $_POST['prenom'];
 
-    if ($stmt) {
-        $stmt->bind_param("sss", $courseName, $startDate, $endDate);
-        $stmt->execute();
-        $stmt->close();
-    } else {
-        die("Query preparation failed: " . $db->error);
-    }
+  // Insert new student into the database
+  $sql = "INSERT INTO student (email, password, GroupId, Year, nom_student, prenom_student) VALUES (?, ?, ?, ?, ?, ?)";
+  
+  $stmt = $db->prepare($sql);
 
-    // Close the database connection (moved outside of the if statement)
-    $db->close();
+  if ($stmt) {
+      $stmt->bind_param("ssisss", $email, $password, $groupId, $year, $nom, $prenom);
+      $stmt->execute();
+
+      // Check if the insertion was successful
+      if ($stmt->affected_rows > 0) {
+          echo "New student added successfully!";
+      } else {
+          echo "Error adding new student: " . $stmt->error;
+      }
+
+      $stmt->close();
+  } else {
+      die("Query preparation failed: " . $db->error);
+  }
 }
 ?>
 
@@ -160,7 +167,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
-              <span class="menu-title">Add new Course</span>
+              <span class="menu-title">Add Course</span>
             </a>
           </li>
         </ul>
@@ -207,7 +214,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
+                  <a class="dropdown-item preview-item" href="../LoginAdmin.php">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
@@ -235,44 +242,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- New content: Form for entering a new student -->
     <div class="row">
-    <div class="col-md-12 grid-margin stretch-card">
+      <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Add New Course</h4>
+          <div class="card-body">
+            <h4 class="card-title">Add New Student</h4>
 
-                <!-- Course Form -->
-                <form action="process_course.php" method="post"> <!-- Replace "process_course.php" with your actual form processing script -->
+            <!-- Student Form -->
+            <form method="post"> <!-- Replace "process_student.php" with your actual form processing script -->
 
-                    <!-- Course Name -->
-                    <div class="form-group">
-                        <label for="courseName">Course Name:</label>
-                        <input type="text" class="form-control" id="courseName" name="courseName" required>
-                    </div>
+              <!-- Email -->
+              <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
 
-                    <!-- Start Date -->
-                    <div class="form-group">
-                        <label for="startDate">Start Date:</label>
-                        <input type="date" class="form-control" id="startDate" name="startDate" required>
-                    </div>
+              <!-- Password -->
+              <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+              </div>
 
-                    <!-- End Date -->
-                    <div class="form-group">
-                        <label for="endDate">End Date:</label>
-                        <input type="date" class="form-control" id="endDate" name="endDate" required>
-                    </div>
+              <!-- GroupId -->
+              <div class="form-group">
+                <label for="groupId">Group ID:</label>
+                <input type="text" class="form-control" id="groupId" name="groupId" required>
+              </div>
 
-                    <!-- Submit button -->
-                    <button type="submit" class="btn btn-primary">Submit</button>
+              <!-- Year -->
+              <div class="form-group">
+                <label for="year">Year:</label>
+                <input type="text" class="form-control" id="year" name="year" required>
+              </div>
 
-                </form>
-                <!-- End Course Form -->
+              <!-- Nom (Last Name) -->
+              <div class="form-group">
+                <label for="nom">Last Name:</label>
+                <input type="text" class="form-control" id="nom" name="nom" required>
+              </div>
 
-            </div>
+              <!-- Prenom (First Name) -->
+              <div class="form-group">
+                <label for="prenom">First Name:</label>
+                <input type="text" class="form-control" id="prenom" name="prenom" required>
+              </div>
+
+              <!-- Submit button -->
+              <button type="submit" class="btn btn-primary">Submit</button>
+
+            </form>
+            <!-- End Student Form -->
+
+          </div>
         </div>
+      </div>
     </div>
-</div>
-
-
     <!-- End New content: Form for entering a new student -->
 
     <!-- Existing content -->
