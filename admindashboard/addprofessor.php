@@ -49,15 +49,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     $prenom = trim($_POST["prenom"]);
     $password = trim($_POST["password"]);
     $email = trim($_POST["email"]);
+    $academicYear = trim($_POST["academicYear"]);
+    $filiereId = trim($_POST["filiereId"]);
+
 
     // Prepare an INSERT statement
-    $sql = "INSERT INTO professor (nom_prof , prenom_prof , password, email) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO professor (nom_prof , prenom_prof , password, email, filiere_id, academic_year_id ) VALUES (?, ?, ?, ?, ?, ?)";
 
     $stmt = $db->prepare($sql);
 
     if ($stmt) {
         // Bind variables to the prepared statement as parameters
-        $stmt->bind_param("ssss", $nom, $prenom, $password, $email);
+        $stmt->bind_param("ssssii", $nom, $prenom, $password, $email , $filiereId, $academicYear);
 
         // Attempt to execute the prepared statement
         if ($stmt->execute()) {
@@ -273,6 +276,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                         <label for="email">Email:</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
+
+                    <!-- Academic Year -->
+    <div class="form-group">
+        <label for="academicYear">Academic Year (1 to 5):</label>
+        <input type="number" class="form-control" id="academicYear" name="academicYear" min="1" max="5" required>
+    </div>
+    <!-- FiliereId (Dropdown for selecting Filiere) -->
+<div class="form-group">
+  <label for="filiereId">Filiere:</label>
+  <select class="form-control" id="filiereId" name="filiereId" required>
+    <option value="1">Ingénierie Informatique et Réseaux</option>
+    <option value="2">Ingénierie Financière et Audit</option>
+    <option value="3">Génie Industriel</option>
+    <option value="4">Génie Civil, Bâtiments et Travaux Publics (BTP)</option>
+    <option value="5">Ingénierie Automatismes et Informatique Industrielle</option>
+    <!-- Add more options as needed -->
+  </select>
+</div>
 
                     <!-- Submit button -->
                     <button type="submit" class="btn btn-primary">Submit</button>

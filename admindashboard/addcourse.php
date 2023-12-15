@@ -35,8 +35,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         die("Query preparation failed: " . $db->error);
     }
 
-    // Close the database connection (moved outside of the if statement)
-    $db->close();
+    
 } else {
     // Redirect to the login page if session variables are not set
     header("location: login.php");
@@ -46,26 +45,32 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve course information from form submission
     $courseName = $_POST['courseName'];
-    $startDate = $_POST['startDate'];
     $endDate = $_POST['endDate'];
+    $filiereId = $_POST['filiereId'];
+    $academicYear = $_POST['academicYear'];
+
 
     // Insert course information into database
-    $sql = "INSERT INTO courses (courseName, startDate, endDate)
-            VALUES (?, ?, ?)";
+    $sql = "INSERT INTO courses (courseName, end_Date, filiereId, academicYear)
+            VALUES (?, ?, ? , ?)";
     
     $stmt = $db->prepare($sql);
 
     if ($stmt) {
-        $stmt->bind_param("sss", $courseName, $startDate, $endDate);
+        $stmt->bind_param("ssii", $courseName, $endDate, $filiereId, $academicYear);
         $stmt->execute();
         $stmt->close();
+        header("location: index.php");
+        exit();
     } else {
         die("Query preparation failed: " . $db->error);
     }
 
     // Close the database connection (moved outside of the if statement)
-    $db->close();
+    
 }
+
+$db->close();
 ?>
 
 
@@ -241,30 +246,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h4 class="card-title">Add New Course</h4>
 
                 <!-- Course Form -->
-                <form action="process_course.php" method="post"> <!-- Replace "process_course.php" with your actual form processing script -->
+                <form  method="post">
 
-                    <!-- Course Name -->
-                    <div class="form-group">
-                        <label for="courseName">Course Name:</label>
-                        <input type="text" class="form-control" id="courseName" name="courseName" required>
-                    </div>
+    <!-- Course Name -->
+    <div class="form-group">
+        <label for="courseName">Course Name:</label>
+        <input type="text" class="form-control" id="courseName" name="courseName" required>
+    </div>
 
-                    <!-- Start Date -->
-                    <div class="form-group">
-                        <label for="startDate">Start Date:</label>
-                        <input type="date" class="form-control" id="startDate" name="startDate" required>
-                    </div>
+    <!-- End Date -->
+    <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input type="date" class="form-control" id="endDate" name="endDate" required>
+    </div>
 
-                    <!-- End Date -->
-                    <div class="form-group">
-                        <label for="endDate">End Date:</label>
-                        <input type="date" class="form-control" id="endDate" name="endDate" required>
-                    </div>
+    <!-- Academic Year -->
+    <div class="form-group">
+        <label for="academicYear">Academic Year (1 to 5):</label>
+        <input type="number" class="form-control" id="academicYear" name="academicYear" min="1" max="5" required>
+    </div>
+    <!-- FiliereId (Dropdown for selecting Filiere) -->
+<div class="form-group">
+  <label for="filiereId">Filiere:</label>
+  <select class="form-control" id="filiereId" name="filiereId" required>
+    <option value="1">Ingénierie Informatique et Réseaux</option>
+    <option value="2">Ingénierie Financière et Audit</option>
+    <option value="3">Génie Industriel</option>
+    <option value="4">Génie Civil, Bâtiments et Travaux Publics (BTP)</option>
+    <option value="5">Ingénierie Automatismes et Informatique Industrielle</option>
+    <!-- Add more options as needed -->
+  </select>
+</div>
 
-                    <!-- Submit button -->
-                    <button type="submit" class="btn btn-primary">Submit</button>
+    <!-- Submit button -->
+    <button type="submit" class="btn btn-primary">Submit</button>
 
-                </form>
+</form>
+
                 <!-- End Course Form -->
 
             </div>
