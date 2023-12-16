@@ -37,6 +37,21 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
     header("location: login.php");
     exit();
 }
+
+if (isset($_GET['logout'])) {
+  // Unset all session variables
+  $_SESSION = array();
+
+  // Destroy the session
+  session_destroy();
+
+  // Redirect to the login page
+  header("location: ../LoginStudent.php");
+  exit();
+}
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -132,6 +147,22 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
               <span class="menu-title">Upload Certificate</span>
             </a>
           </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="enroll.php">
+              <span class="menu-icon">
+                <i class="mdi mdi-contacts"></i>
+              </span>
+              <span class="menu-title">Enroll in Course</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="complaint.php">
+              <span class="menu-icon">
+                <i class="mdi mdi-file-document-box"></i>
+              </span>
+              <span class="menu-title">Complaints</span>
+            </a>
+          </li>>
         </ul>
         
       </nav>

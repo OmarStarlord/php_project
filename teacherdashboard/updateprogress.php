@@ -37,6 +37,19 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
     header("location: login.php");
     exit();
 }
+
+if (isset($_GET['logout'])) {
+  // Unset all session variables
+  $_SESSION = array();
+
+  // Destroy the session
+  session_destroy();
+
+  // Redirect to the login page
+  header("location: ../LoginAdmin.php");
+  exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +58,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Student Dashboard</title>
+    <title>Professor Dashboard</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
@@ -176,10 +189,10 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
+                  <a class="dropdown-item preview-item" href="?logout=true">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
-                        <i class="mdi mdi-logout text-danger"></i>
+                        <i class="mdi mdi-logout text-danger" ></i>
                       </div>
                     </div>
                     <div class="preview-item-content">

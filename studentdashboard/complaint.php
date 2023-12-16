@@ -1,82 +1,92 @@
 <?php
 session_start();
 
+
 include_once "config.php"; // Adjust the path as needed
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-    // Retrieve username and password from session variables
-    $username = $_SESSION['login_email'];
+    // Retrieve email and password from session variables
+    $email = $_SESSION['login_email'];
     $password = $_SESSION['login_password'];
 
-    // Fetch admin information based on username and password
-    $sql = "SELECT username, password
-            FROM admin
-            WHERE username = ? AND password = ?";
-    
-    $stmt = $db->prepare($sql);
+    // Fetch student information based on email and password
+    $sql = $sql = "SELECT id_student, nom_student, prenom_student, AcademicYear, FiliereId
+            FROM Student
+            WHERE email = '$email' AND password = '$password'";
 
-    if ($stmt) {
-        $stmt->bind_param("ss", $username, $password);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    $result = $db->query($sql); // Change $conn to $db
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $adminId = $row['username'];
-                $password = $row['password'];
-                // Retrieve other columns as needed
-            }
-        } else {
-            die("No records found for the provided username and password");
-        }
-
-        $stmt->close();
-    } else {
-        die("Query preparation failed: " . $db->error);
+    if (!$result) {
+        die("Query failed: " . $db->error);
     }
 
-    
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $studentId = $row['id_student'];
+            $fullName = $row['nom_student'] . ' ' . $row['prenom_student'];
+            $level = $row['AcademicYear'];
+            $filiereId = $row['FiliereId'];
+            $currentAcademicYear = $level;
+                  $currentFiliereId = $filiereId;
+            
+        }
+    } else {
+        die("No records found for the provided email and password");
+    }
+
 } else {
     // Redirect to the login page if session variables are not set
-    header("location: login.php");
+    header("location: ../login.php");
     exit();
 }
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-  // Retrieve form data
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-  $groupId = $_POST['groupId'];
-  $year = $_POST['year'];
-  $nom = $_POST['nom'];
-  $prenom = $_POST['prenom'];
-  $academicYear = $_POST['academicYear']; // assuming this is the value for AcademicYear
-  $filiereId = $_POST['filiereId']; // assuming this is the value for FiliereId
 
-  // Insert new student into the database
-  $sql = "INSERT INTO student (email, password, GroupId, Year, nom_student, prenom_student, AcademicYear, FiliereId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+if (isset($_GET['logout'])) {
+  // Unset all session variables
+  $_SESSION = array();
 
-  $stmt = $db->prepare($sql);
+  // Destroy the session
+  session_destroy();
 
-  if ($stmt) {
-      $stmt->bind_param("ssisssii", $email, $password, $groupId, $year, $nom, $prenom, $academicYear, $filiereId);
-      $stmt->execute();
-
-      // Check if the insertion was successful
-      if ($stmt->affected_rows > 0) {
-          echo "New student added successfully!";
-      } else {
-          echo "Error adding new student: " . $stmt->error;
-      }
-
-      $stmt->close();
-  } else {
-      die("Query preparation failed: " . $db->error);
-  }
+  // Redirect to the login page
+  header("location: ../LoginStudent.php");
+  exit();
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['complaint_text'])) {
+    // Retrieve form data
+    $complaint_text = $_POST['complaint_text'];
+
+    // Handle file upload
+    $complaint_image = file_get_contents($_FILES['complaint_image']['tmp_name']);
+
+    // Get the selected course ID
+    $course_id = $_POST['course'];
+
+    // Prepare and execute SQL query to add a complaint
+    $stmt = $db->prepare("INSERT INTO complaint (student_id, course_id, complaint_text, complaint_image, academic_year, filiere) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("iissss", $studentId, $course_id, $complaint_text, $complaint_image, $currentAcademicYear, $currentFiliereId);
+
+    if ($stmt->execute()) {
+        echo "Complaint added successfully.";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    $stmt->close();
+}
+
+
+
+$db->close();
 ?>
 
+
+
+
+$db->close();
+
+?>
 
 
 <!DOCTYPE html>
@@ -108,15 +118,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar" aria-label="Sidebar Navigation">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="index.html"><img src="assets/images/logo.svg" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="assets/images/logo-mini.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo" href="index.php"><img src="assets/images/logo.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo-mini" href="index.php"><img src="assets/images/logo.svg" alt="logo" /></a>
         </div>
         <ul class="nav">
           <li class="nav-item profile">
             <div class="profile-desc">
               
                 <div class="profile-name">
-                  <h5 class="mb-0 font-weight-normal"><?php echo $adminId; ?></h5>
+                  <h5 class="mb-0 font-weight-normal"><?php echo $fullName; ?></h5>
                 </div>
   
               <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
@@ -157,19 +167,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="addprofessor.php">
+            <a class="nav-link" href="updateprogress.php">
               <span class="menu-icon">
                 <i class="mdi mdi-chart-bar"></i>
               </span>
-              <span class="menu-title">Add Professor</span>
+              <span class="menu-title">Update progress</span>
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="addcourse.php">
+            <a class="nav-link" href="uploadcertificate.php">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
-              <span class="menu-title">Add Course</span>
+              <span class="menu-title">Upload Certificate</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="enroll.php">
+              <span class="menu-icon">
+                <i class="mdi mdi-contacts"></i>
+              </span>
+              <span class="menu-title">Enroll in Course</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="complaint.php">
+              <span class="menu-icon">
+                <i class="mdi mdi-file-document-box"></i>
+              </span>
+              <span class="menu-title">Complaints</span>
             </a>
           </li>
         </ul>
@@ -198,7 +224,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                   <div class="navbar-profile">
-                    <h5 class="mb-0 font-weight-normal"><?php echo $adminId; ?></h5>
+                    <h5 class="mb-0 font-weight-normal"><?php echo $fullName; ?></h5>
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
                 </a>
@@ -216,16 +242,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item" href="../LoginAdmin.php">
+                  <a class="dropdown-item preview-item" href="?logout=true">
                     <div class="preview-thumbnail">
-                      <div class="preview-icon bg-dark rounded-circle">
-                        <i class="mdi mdi-logout text-danger"></i>
-                      </div>
+                        <div class="preview-icon bg-dark rounded-circle">
+                            <i class="mdi mdi-logout text-danger"></i>
+                        </div>
                     </div>
                     <div class="preview-item-content">
-                      <p class="preview-subject mb-1">Log out</p>
+                        <p class="preview-subject mb-1">Log out</p>
                     </div>
-                  </a>
+              </a>
                   <div class="dropdown-divider"></div>
                   <p class="p-3 mb-0 text-center">Advanced settings</p>
                 </div>
@@ -237,100 +263,78 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           </div>
         </nav>
         <!-- partial -->
-        <div class="main-panel">
-  <div class="content-wrapper">
-
-    <!-- Existing content -->
-
-    <!-- New content: Form for entering a new student -->
-    <div class="row">
-      <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title">Add New Student</h4>
-
-            <!-- Student Form -->
-<form method="post" action="process_student.php"> <!-- Replace "process_student.php" with your actual form processing script -->
-
-<!-- Email -->
-<div class="form-group">
-  <label for="email">Email:</label>
-  <input type="email" class="form-control" id="email" name="email" required>
-</div>
-
-<!-- Password -->
-<div class="form-group">
-  <label for="password">Password:</label>
-  <input type="password" class="form-control" id="password" name="password" required>
-</div>
-
-<!-- GroupId -->
-<div class="form-group">
-  <label for="groupId">Group ID:</label>
-  <input type="text" class="form-control" id="groupId" name="groupId" required>
-</div>
-
-<!-- Year -->
-<div class="form-group">
-  <label for="year">Year:</label>
-  <input type="text" class="form-control" id="year" name="year" required>
-</div>
-
-<!-- Nom (Last Name) -->
-<div class="form-group">
-  <label for="nom">Last Name:</label>
-  <input type="text" class="form-control" id="nom" name="nom" required>
-</div>
-
-<!-- Prenom (First Name) -->
-<div class="form-group">
-  <label for="prenom">First Name:</label>
-  <input type="text" class="form-control" id="prenom" name="prenom" required>
-</div>
-
-<!-- FiliereId (Dropdown for selecting Filiere) -->
-<div class="form-group">
-  <label for="filiereId">Filiere:</label>
-  <select class="form-control" id="filiereId" name="filiereId" required>
-    <option value="1">Ingénierie Informatique et Réseaux</option>
-    <option value="2">Ingénierie Financière et Audit</option>
-    <option value="3">Génie Industriel</option>
-    <option value="4">Génie Civil, Bâtiments et Travaux Publics (BTP)</option>
-    <option value="5">Ingénierie Automatismes et Informatique Industrielle</option>
-    <!-- Add more options as needed -->
-  </select>
-</div>
-
-<!-- Submit button -->
-<button type="submit" class="btn btn-primary">Submit</button>
-
-</form>
-<!-- End Student Form -->
-  
-
-          </div>
+        <!-- main-panel starts -->
+        <!-- Add Complaint Section -->
+<div class="row">
+    <div class="col-md-12 grid-margin">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="font-weight-bold mb-0">Add a Complaint</h4>
+            </div>
         </div>
-      </div>
     </div>
-    <!-- End New content: Form for entering a new student -->
-
-    <!-- Existing content -->
-
-  </div>
-
-  <!-- Existing content -->
-
-  <!-- partial:partials/_footer.html -->
-  <footer class="footer">
-    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-      <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
-    </div>
-  </footer>
-  <!-- partial -->
-
 </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="complaint_text">Complaint Text:</label>
+                        <textarea class="form-control" name="complaint_text" rows="10" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <!-- Hidden input field to capture the selected course ID -->
+                        <input type="hidden" name="course_id" id="course_id" value="">
+                        
+                        <label for="course">Choose a Course:</label>
+                        <select class="form-control" name="course" id="course" required>
+                            <?php
+                            try {
+                                // Establish a PDO connection
+                                $pdo = new PDO("mysql:host=localhost;dbname=platformcoursera", "omar", "omar");
+
+                                // Set the PDO error mode to exception
+                                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                                // Prepare and execute the query
+                                $stmt = $pdo->prepare("SELECT id1_course, CourseName FROM courses WHERE AcademicYear = :academicYear AND FiliereId = :filiereId");
+                                $stmt->bindParam(':academicYear', $currentAcademicYear, PDO::PARAM_STR);
+                                $stmt->bindParam(':filiereId', $currentFiliereId, PDO::PARAM_STR);
+                                $stmt->execute();
+
+                                // Check if there are rows in the result set
+                                if ($stmt->rowCount() > 0) {
+                                    while ($courseRow = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                        echo "<option value='" . $courseRow['id1_course'] . "'>" . $courseRow['CourseName'] . "</option>";
+                                    }
+                                } else {
+                                    echo "<option value='' disabled>No courses available</option>";
+                                }
+                            } catch (PDOException $e) {
+                                echo "Error: " . $e->getMessage();
+                            } finally {
+                                // Close the PDO connection
+                                $pdo = null;
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaint_image">Complaint Image:</label>
+                        <input type="file" class="form-control-file" name="complaint_image" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Complaint</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
         <!-- main-panel ends -->
-      </div>
+
       <!-- page-body-wrapper ends -->
     </div>
     <!-- container-scroller -->

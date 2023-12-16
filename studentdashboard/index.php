@@ -10,27 +10,46 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
     $password = $_SESSION['login_password'];
 
     // Fetch student information based on email and password
-    $sql = "SELECT id_student, nom_student, prenom_student, AcademicYear, groupId
-            FROM Student
-            WHERE email = '$email' AND password = '$password'";
+    $sql = "SELECT s.id_student, s.nom_student, s.prenom_student, s.AcademicYear, s.groupId, s.filiereId, f.name AS filiereName
+        FROM Student s
+        JOIN filiere f ON s.filiereId = f.id_filiere
+        WHERE s.email = '$email' AND s.password = '$password'";
 
-    $result = $db->query($sql); // Change $conn to $db
+$result = $db->query($sql); // Change $conn to $db
 
-    if (!$result) {
-        die("Query failed: " . $db->error);
-    }
+if (!$result) {
+    die("Query failed: " . $db->error);
+}
 
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $studentId = $row['id_student'];
-            $fullName = $row['nom_student'] . ' ' . $row['prenom_student'];
-            $level = $row['AcademicYear'];
-            $groupID = $row['groupId'];
-            
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $studentId = $row['id_student'];
+        $fullName = $row['nom_student'] . ' ' . $row['prenom_student'];
+        $level = $row['AcademicYear'];
+        $groupID = $row['groupId'];
+        $filiereName = $row['filiereName'];
+        
+        // Retrieve course marks
+        $marksSql = "SELECT c.CourseName, m.Mark
+                     FROM courses c
+                     JOIN marks m ON c.id1_course = m.CourseId
+                     WHERE m.StudentId = '$studentId'";
+
+        $marksResult = $db->query($marksSql);
+
+        if (!$marksResult) {
+            die("Query failed: " . $db->error);
         }
-    } else {
-        die("No records found for the provided email and password");
+
+        $courseMarks = array();
+
+        while ($marksRow = $marksResult->fetch_assoc()) {
+            $courseMarks[$marksRow['CourseName']] = $marksRow['Mark'];
+        }
     }
+} else {
+    die("No records found for the provided email and password");
+}
 
     // Close the database connection
     $db->close();
@@ -150,6 +169,22 @@ if (isset($_GET['logout'])) {
               <span class="menu-title">Upload Certificate</span>
             </a>
           </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="enroll.php">
+              <span class="menu-icon">
+                <i class="mdi mdi-contacts"></i>
+              </span>
+              <span class="menu-title">Enroll in Course</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="complaint.php">
+              <span class="menu-icon">
+                <i class="mdi mdi-file-document-box"></i>
+              </span>
+              <span class="menu-title">Complaints</span>
+            </a>
+          </li>
         </ul>
         
       </nav>
@@ -230,14 +265,21 @@ if (isset($_GET['logout'])) {
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                   <div class="card">
                       <div class="card-body">
-                          <p class="mb-0 font-weight-normal">Group: <?php echo $groupID; ?></p>
+                          <p class="mb-0 font-weight-normal">Group:  <br> <?php echo $groupID; ?></p>
                       </div>
                   </div>
               </div>
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                   <div class="card">
                       <div class="card-body">
-                          <p class="mb-0 font-weight-normal">Academic Year: <?php echo $level; ?></p>
+                          <p class="mb-0 font-weight-normal">Academic Year: <br> <?php echo $level; ?></p>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                  <div class="card">
+                      <div class="card-body">
+                          <p class="mb-0 font-weight-normal">Filiereld : <br> <?php echo $filiereName; ?></p>
                       </div>
                   </div>
               </div>
@@ -248,9 +290,20 @@ if (isset($_GET['logout'])) {
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Progress</h4>
-                    <!-- Placeholder for the Bar Chart -->
-                    <div id="barChartContainer" class="transaction-chart"></div>
-                    <!-- ... Other content ... -->
+                    <div class="col-md-4 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Progress</h4>
+            <!-- Display course marks -->
+            <?php
+            foreach ($courseMarks as $courseName => $mark) {
+                echo "<p>$courseName: $mark</p>";
+            }
+            ?>
+            <!-- ... Other content ... -->
+        </div>
+    </div>
+</div>
                   </div>
                 </div>
               </div>

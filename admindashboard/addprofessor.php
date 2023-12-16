@@ -76,6 +76,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         die("Query preparation failed: " . $db->error);
     }
 }
+
+if (isset($_GET['logout'])) {
+  // Unset all session variables
+  $_SESSION = array();
+
+  // Destroy the session
+  session_destroy();
+
+  // Redirect to the login page
+  header("location: ../LoginAdmin.php");
+  exit();
+}
+
+
 ?>
 
 
@@ -217,7 +231,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
+                  <a class="dropdown-item preview-item" href="?logout=true">>
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>

@@ -1,49 +1,46 @@
 <?php
 session_start();
 
-include_once "config.php"; // Adjust the path as needed
+// Include class files
+include_once "classes/database.php";
+include_once "classes/admin.php";
+include_once "classes/student.php";
+
+$database = new Database();
+$admin = new Admin($database);
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-    // Retrieve username and password from session variables
     $username = $_SESSION['login_email'];
     $password = $_SESSION['login_password'];
 
-    // Fetch admin information based on username and password
-    $sql = "SELECT username, password
-            FROM admin
-            WHERE username = ? AND password = ?";
-    
-    $stmt = $db->prepare($sql);
-
-    if ($stmt) {
-        $stmt->bind_param("ss", $username, $password);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $adminId = $row['username'];
-                $password = $row['password'];
-                // Retrieve other columns as needed
-            }
-        } else {
-            die("No records found for the provided username and password");
-        }
-
-        $stmt->close();
-    } else {
-        die("Query preparation failed: " . $db->error);
-    }
-
-    
+    $adminId = $admin->fetchAdmin($username, $password);
 } else {
-    // Redirect to the login page if session variables are not set
     header("location: login.php");
     exit();
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $student = new Student($database);
+
+    
+   $student->addStudent($_POST['email'], $_POST['password'], $_POST['groupId'], $_POST['nom'], $_POST['prenom'], $_POST['year'], $_POST['filiereId']);
+}
+
+if (isset($_GET['logout'])) {
+  // Unset all session variables
+  $_SESSION = array();
+
+  // Destroy the session
+  session_destroy();
+
+  // Redirect to the login page
+  header("location: ../LoginAdmin.php");
+  exit();
+}
+
 
 ?>
+
 
 
 
@@ -184,7 +181,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item" href="../LoginAdmin.php">
+                  <a class="dropdown-item preview-item" href="?logout=true">">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
@@ -218,49 +215,63 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
             <h4 class="card-title">Add New Student</h4>
 
             <!-- Student Form -->
-            <form method="post"> <!-- Replace "process_student.php" with your actual form processing script -->
+<form method="post"> <!-- Replace "process_student.php" with your actual form processing script -->
 
-              <!-- Email -->
-              <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-              </div>
+<!-- Email -->
+<div class="form-group">
+  <label for="email">Email:</label>
+  <input type="email" class="form-control" id="email" name="email" required>
+</div>
 
-              <!-- Password -->
-              <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-              </div>
+<!-- Password -->
+<div class="form-group">
+  <label for="password">Password:</label>
+  <input type="password" class="form-control" id="password" name="password" required>
+</div>
 
-              <!-- GroupId -->
-              <div class="form-group">
-                <label for="groupId">Group ID:</label>
-                <input type="text" class="form-control" id="groupId" name="groupId" required>
-              </div>
+<!-- GroupId -->
+<div class="form-group">
+  <label for="groupId">Group ID:</label>
+  <input type="text" class="form-control" id="groupId" name="groupId" required>
+</div>
 
-              <!-- Year -->
-              <div class="form-group">
-                <label for="year">Year:</label>
-                <input type="text" class="form-control" id="year" name="year" required>
-              </div>
+<!-- Year -->
+<div class="form-group">
+  <label for="year">Year:</label>
+  <input type="text" class="form-control" id="year" name="year" required>
+</div>
 
-              <!-- Nom (Last Name) -->
-              <div class="form-group">
-                <label for="nom">Last Name:</label>
-                <input type="text" class="form-control" id="nom" name="nom" required>
-              </div>
+<!-- Nom (Last Name) -->
+<div class="form-group">
+  <label for="nom">Last Name:</label>
+  <input type="text" class="form-control" id="nom" name="nom" required>
+</div>
 
-              <!-- Prenom (First Name) -->
-              <div class="form-group">
-                <label for="prenom">First Name:</label>
-                <input type="text" class="form-control" id="prenom" name="prenom" required>
-              </div>
+<!-- Prenom (First Name) -->
+<div class="form-group">
+  <label for="prenom">First Name:</label>
+  <input type="text" class="form-control" id="prenom" name="prenom" required>
+</div>
 
-              <!-- Submit button -->
-              <button type="submit" class="btn btn-primary">Submit</button>
+<!-- FiliereId (Dropdown for selecting Filiere) -->
+<div class="form-group">
+  <label for="filiereId">Filiere:</label>
+  <select class="form-control" id="filiereId" name="filiereId" required>
+    <option value="1">Ingénierie Informatique et Réseaux</option>
+    <option value="2">Ingénierie Financière et Audit</option>
+    <option value="3">Génie Industriel</option>
+    <option value="4">Génie Civil, Bâtiments et Travaux Publics (BTP)</option>
+    <option value="5">Ingénierie Automatismes et Informatique Industrielle</option>
+    <!-- Add more options as needed -->
+  </select>
+</div>
 
-            </form>
-            <!-- End Student Form -->
+<!-- Submit button -->
+<button type="submit" class="btn btn-primary">Submit</button>
+
+</form>
+<!-- End Student Form -->
+  
 
           </div>
         </div>
