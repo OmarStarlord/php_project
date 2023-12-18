@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Login</title>
+    <title>Admin Login</title>
 
     <style>
         body {
@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <form method="post">
-        <h2>User Login</h2>
+        <h2>Admin Login</h2>
 
         <label for="name">Admind Id:</label>
         <input type="text" name="name" required>

@@ -1,20 +1,22 @@
 <?php
 session_start();
 
-
 include_once "config.php";
+include_once "classes/scape.php";
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-    
+
     $email = $_SESSION['login_email'];
     $password = $_SESSION['login_password'];
 
-    
-    $sql = "SELECT id_student, nom_student, prenom_student, AcademicYear, groupId
-            FROM Student
-            WHERE email = '$email' AND password = '$password'";
+   $sql = "SELECT s.id_student, s.nom_student, s.prenom_student, s.AcademicYear, s.GroupId, s.FiliereId
+        FROM Student s
+        INNER JOIN Courses c ON s.FiliereId = c.FiliereId
+        WHERE s.email = '$email' AND s.password = '$password'";
 
-    $result = $db->query($sql); 
+
+
+    $result = $db->query($sql);
 
     if (!$result) {
         die("Query failed: " . $db->error);
@@ -25,12 +27,15 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
             $studentId = $row['id_student'];
             $fullName = $row['nom_student'] . ' ' . $row['prenom_student'];
             $level = $row['AcademicYear'];
+            $filiereId = $row['FiliereId'];
+            $currentAcademicYear = $level;
+                  $currentFiliereId = $filiereId;
+            
         }
     } else {
         die("No records found for the provided email and password");
     }
 
-    
     $db->close();
 } else {
 
@@ -49,6 +54,36 @@ if (isset($_GET['logout'])) {
   header("location: ../LoginStudent.php");
   exit();
 }
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    $selectedCourseId = $_POST["course"]; 
+
+    
+    $url = $_POST["linkInput"];
+
+    
+    $webScraper = new WebScraper($url);
+
+    
+    $webScraper->scrape();
+
+    // Get the extracted information
+    $courseName = $webScraper->getCourseName();
+    $StudentName = $webScraper->getStudentName();
+    $formattedDate = $webScraper->getFormattedDate();
+
+  
+
+    // Example: Output the extracted information
+    echo "Course Name: $courseName<br>";
+    echo "Instructor Name: $instructorName<br>";
+    echo "Formatted Date: $formattedDate<br>";
+
+    
+
+}
+?>
 
 
 
@@ -228,43 +263,75 @@ if (isset($_GET['logout'])) {
           </div>
         </nav>
         <!-- partial -->
-        <div class="main-panel">
-        <div class="content-wrapper">
-          <div class="row">
+        <!-- main-panel starts -->
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Update Progress</h4>
-                  
-                  <!-- Form to update progress -->
-                  <form method="post" action="process_update_progress.php" enctype="multipart/form-data">
-                    <div class="form-group">
-                      <label for="image">Upload Image:</label>
-                      <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Update Progress</h4>
+
+                        <!-- Form to update progress -->
+                        <form method="post" action="process_update_progress.php">
+                            <div class="form-group">
+                                <label for="courseSelect">Select Course:</label>
+                                <select class="form-control" name="course" id="course" required>
+  <?php
+  try {
+    
+    $pdo = new PDO("mysql:host=localhost;dbname=platformcoursera", "omar", "omar");
+
+    
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    
+    $stmt = $pdo->prepare("SELECT id1_course, CourseName FROM courses WHERE AcademicYear = :academicYear AND FiliereId = :filiereId");
+    $stmt->bindParam(':academicYear', $currentAcademicYear, PDO::PARAM_STR);
+    $stmt->bindParam(':filiereId', $currentFiliereId, PDO::PARAM_STR);
+    $stmt->execute();
+
+    
+    if ($stmt->rowCount() > 0) {
+      while ($courseRow = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        echo "<option value='" . $courseRow['id1_course'] . "'>" . $courseRow['CourseName'] . "</option>";
+      }
+    } else {
+      echo "<option value='' disabled>No courses available</option>";
+    }
+  } catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+  } finally {
+    
+    $pdo = null;
+  }
+  ?>
+</select>
+                            </div>
+                            <div class="form-group">
+                                <label for="linkInput">Link:</label>
+                                <input type="url" class="form-control" id="linkInput" name="linkInput" placeholder="Enter link" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                        <!-- End Form -->
                     </div>
-                    <div class="form-group">
-                      <label for="progressText">Progress Text:</label>
-                      <input type="text" class="form-control" id="progressText" name="progressText" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                  </form>
-                  <!-- End Form -->
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-            
-          <!-- content-wrapper ends -->
-          <!-- partial:partials/_footer.html -->
-          <footer class="footer">
-            <div class="d-sm-flex justify-content-center justify-content-sm-between">
-              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
-            </div>
-          </footer>
-          <!-- partial -->
+    </div>
+
+    <!-- content-wrapper ends -->
+    <!-- partial:partials/_footer.html -->
+    <footer class="footer">
+        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
         </div>
-        <!-- main-panel ends -->
+    </footer>
+    <!-- partial -->
+</div>
+<!-- main-panel ends -->
+
       </div>
       <!-- page-body-wrapper ends -->
     </div>

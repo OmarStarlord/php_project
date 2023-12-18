@@ -75,7 +75,7 @@ if (isset($_GET['logout'])) {
   session_destroy();
 
   // Redirect to the login page
-  header("location: ../LoginAdmin.php");
+  header("location: ../LoginProfessor.php");
   exit();
 }
 
@@ -160,19 +160,11 @@ if (isset($_GET['logout'])) {
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="updateprogress.php">
-              <span class="menu-icon">
-                <i class="mdi mdi-chart-bar"></i>
-              </span>
-              <span class="menu-title">Update progress</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="uploadcertificate.php">
+            <a class="nav-link" href="viewcomplaints.php">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
-              <span class="menu-title">Upload Certificate</span>
+              <span class="menu-title">Complaints</span>
             </a>
           </li>
         </ul>
@@ -219,13 +211,13 @@ if (isset($_GET['logout'])) {
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item" href="?logout=true">
+                  <a class="dropdown-item preview-item" href="?logout=true">>
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
                       </div>
                     </div>
-                    <div class="preview-item-content" >
+                    <div class="preview-item-content">
                       <p class="preview-subject mb-1">Log out</p>
                     </div>
                   </a>

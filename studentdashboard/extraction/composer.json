@@ -1,6 +1,0 @@
-{
-    "require": {
-        "ottosmops/pdftotext": "^2.0",
-        "symfony/process": "^7.0"
-    }
-}

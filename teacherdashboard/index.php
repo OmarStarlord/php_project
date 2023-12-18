@@ -28,18 +28,23 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         $academicYearId = $row_teacher['academic_year_id'];
         $filiereId = $row_teacher['filiere_id'];
 
-        // Fetch students based on academic year, filiere, and teacher
-        $sql_students = "SELECT id_student, nom_student, prenom_student, email, GroupId, AcademicYear, FiliereId
-                 FROM student
-                 WHERE AcademicYear = '$academicYearId' AND FiliereId = '$filiereId' AND GroupId = '$teacherId'
-                 ORDER BY GroupId";
+$result_students = null;
 
+        if (isset($_GET['selectedGroup'])) {
+    $selectedGroup = $db->real_escape_string($_GET['selectedGroup']);
 
-        $result_students = $db->query($sql_students);
+    // Modify the SQL query to include the selected group
+    $sql_students = "SELECT id_student, nom_student, prenom_student, email, GroupId, AcademicYear, FiliereId
+                     FROM student
+                     WHERE AcademicYear = '$academicYearId' AND FiliereId = '$filiereId' AND GroupId = '$selectedGroup'
+                     ORDER BY GroupId";
 
-        if (!$result_students) {
-            die("Query failed: " . $db->error);
-        }
+    $result_students = $db->query($sql_students);
+
+    if (!$result_students) {
+        die("Query failed: " . $db->error);
+    }
+}
     } else {
         die("No records found for the provided email and password");
     }
@@ -47,8 +52,8 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
     // Close the database connection
     $db->close();
 } else {
-    // Redirect to the login page if session variables are not set
-    header("location: login.php");
+    
+    header("location: ../loginProfessor.php");
     exit();
 }
 
@@ -60,7 +65,7 @@ if (isset($_GET['logout'])) {
   session_destroy();
 
   // Redirect to the login page
-  header("location: ../LoginAdmin.php");
+  header("location: ../LoginProfessor.php");
   exit();
 }
 
@@ -145,19 +150,11 @@ if (isset($_GET['logout'])) {
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="updateprogress.php">
+            <a class="nav-link" href="viewcomplaints.php">
               <span class="menu-icon">
                 <i class="mdi mdi-chart-bar"></i>
               </span>
-              <span class="menu-title">Update progress</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="uploadcertificate.php">
-              <span class="menu-icon">
-                <i class="mdi mdi-speedometer"></i>
-              </span>
-              <span class="menu-title">Upload Certificate</span>
+              <span class="menu-title">Complaints</span>
             </a>
           </li>
         </ul>
@@ -204,13 +201,13 @@ if (isset($_GET['logout'])) {
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item" href="?logout=true">
+                  <a class="dropdown-item preview-item" href="?logout=true">>
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
                       </div>
                     </div>
-                    <div class="preview-item-content" >
+                    <div class="preview-item-content">
                       <p class="preview-subject mb-1">Log out</p>
                     </div>
                   </a>
@@ -227,6 +224,25 @@ if (isset($_GET['logout'])) {
         <!-- partial -->
         <div class="main-panel">
             <div class="content-wrapper">
+            <div class="row">
+    <div class="col-md-6">
+        <form action="" method="get">
+            <div class="form-group">
+                <label for="selectGroup">Select Group:</label>
+                <select class="form-control" id="selectGroup" name="selectedGroup">
+                    <?php
+                    // Display fixed GroupId values from 1 to 7
+                    for ($i = 1; $i <= 7; $i++) {
+                        echo "<option value='$i'>$i</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Show Students</button>
+        </form>
+    </div>
+</div>
+    
                 <!-- ... (your existing HTML content) ... -->
 
                 <div class="row">
@@ -255,43 +271,43 @@ if (isset($_GET['logout'])) {
                     </div>
                     <!-- Display the students in a table -->
                     <div class="col-md-12 grid-margin stretch-card">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Students</h4>
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Student ID</th>
-                                                <th>Student Name</th>
-                                                <th>Academic Year</th>
-                                                <th>Filiere</th>
-                                                <th>Group</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            while ($row_student = $result_students->fetch_assoc()) {
-                                                echo "<tr>";
-                                                echo "<td>" . $row_student['id_student'] . "</td>";
-                                                echo "<td>" . $row_student['nom_student'] . ' ' . $row_student['prenom_student'] . "</td>";
-                                                echo "<td>" . $row_student['AcademicYear'] . "</td>";
-                                                echo "<td>" . $row_student['FiliereId'] . "</td>";
-                                                echo "<td>" . $row_student['GroupId'] . "</td>";
-                                                echo "</tr>";
-                                            }
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Students</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Academic Year</th>
+                            <th>Filiere</th>
+                            <th>Group</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        while ($row_student = $result_students->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . $row_student['id_student'] . "</td>";
+                            echo "<td>" . $row_student['nom_student'] . ' ' . $row_student['prenom_student'] . "</td>";
+                            echo "<td>" . $row_student['AcademicYear'] . "</td>";
+                            echo "<td>" . $row_student['FiliereId'] . "</td>";
+                            echo "<td>" . $row_student['GroupId'] . "</td>";
+                            echo "</tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
                     <!-- ... (your existing HTML content) ... -->
-                </div>
+                
 
                 <!-- ... (your existing HTML content) ... -->
-            </div>
+            
             <!-- main-panel ends -->
         </div>
         <!-- page-body-wrapper ends -->

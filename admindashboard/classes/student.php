@@ -11,7 +11,7 @@ class Student
 
     public function addStudent($email, $password, $groupId, $nom, $prenom, $academicYear, $filiereId)
     {
-        // Generate a random ID using uniqid but it's only int
+        
         $id_student = rand(100000, 999999);
 
         $sql = "INSERT INTO student (id_student, email, password, GroupId, AcademicYear, nom_student, prenom_student, FiliereId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
