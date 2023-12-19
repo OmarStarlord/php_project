@@ -3,7 +3,7 @@ include("config.php");
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // email and password sent from form
+    
     $myemail = mysqli_real_escape_string($db, $_POST['name']);
     $mypassword = mysqli_real_escape_string($db, $_POST['password']);
 

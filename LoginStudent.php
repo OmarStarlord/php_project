@@ -3,7 +3,7 @@ include("config.php");
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // email and password sent from form
+    
     $myemail = mysqli_real_escape_string($db, $_POST['email']);
     $mypassword = mysqli_real_escape_string($db, $_POST['password']);
 
@@ -17,12 +17,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
     if ($row) {
-        // Store email and password in session variables
+        
         $_SESSION['login_email'] = $myemail;
         $_SESSION['login_password'] = $mypassword;
 
         header("location: studentdashboard/index.php");
-        exit(); // Make sure to exit after the header to prevent further execution
+        exit();
     } else {
         $error = "Your Login Email or Password is invalid";
     }

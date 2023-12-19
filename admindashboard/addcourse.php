@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include_once "config.php"; // Adjust the path as needed
+include_once "config.php"; 
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
   // Retrieve username and password from session variables
@@ -24,7 +24,6 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
           while ($row = $result->fetch_assoc()) {
               $adminId = $row['username'];
               $password = $row['password'];
-              // Retrieve other columns as needed
           }
       } else {
           die("No records found for the provided username and password");

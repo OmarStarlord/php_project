@@ -1,23 +1,23 @@
 <?php
-// Path: scraper/native.php
+
 require 'vendor/autoload.php';
 
 use Goutte\Client;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Handle form submission
+    
     $url = $_POST['url'];
 
     $client = new Client();
     $crawler = $client->request('GET', $url);
 
-    // Extract and echo the course name
+    
     $courseName = $crawler->filter('h2.course-name')->text();
     
-    // Extract and echo the instructor's name
-    $instructorName = $crawler->filter('strong')->eq(0)->text();
     
-    // Extract and convert the completion date to the desired format (YYYY-MM-DD)
+    $studentName = $crawler->filter('strong')->eq(0)->text();
+    
+    
     $completionDateText = $crawler->filter('strong')->eq(1)->text();
     $completionDate = DateTime::createFromFormat('F j, Y', $completionDateText);
     
@@ -27,10 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $formattedDate = 'N/A';
     }
 } else {
-    // Set default values
+    
     $url = '';
     $courseName = '';
-    $instructorName = '';
+    $studentName = '';
     $formattedDate = '';
 }
 ?>
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
         <h2>Results:</h2>
         <p>Course Name: <?php echo htmlspecialchars($courseName); ?></p>
-        <p>Instructor: <?php echo htmlspecialchars($instructorName); ?></p>
+        <p>Student: <?php echo htmlspecialchars($studentName); ?></p>
         <p>Completion Date: <?php echo htmlspecialchars($formattedDate); ?></p>
     <?php endif; ?>
 </body>
