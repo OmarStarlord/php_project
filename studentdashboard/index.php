@@ -15,7 +15,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         JOIN filiere f ON s.filiereId = f.id_filiere
         WHERE s.email = '$email' AND s.password = '$password'";
 
-$result = $db->query($sql); // Change $conn to $db
+$result = $db->query($sql); 
 
 if (!$result) {
     die("Query failed: " . $db->error);
