@@ -2,7 +2,7 @@
 
 session_start();
 
-include_once "config.php"; 
+include_once "config.php";
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
   // Retrieve username and password from session variables
@@ -41,7 +41,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
   header("location: login.php");
   exit();
 }
-// ADD COURSE to database 
+// ADD COURSE to database
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   // Retrieve course information from form submission
   $courseName = $_POST['courseName'];

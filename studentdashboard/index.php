@@ -2,20 +2,20 @@
 session_start();
 
 
-include_once "config.php"; // Adjust the path as needed
+include_once "config.php";
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-    // Retrieve email and password from session variables
+    
     $email = $_SESSION['login_email'];
     $password = $_SESSION['login_password'];
 
-    // Fetch student information based on email and password
+    
     $sql = "SELECT s.id_student, s.nom_student, s.prenom_student, s.AcademicYear, s.groupId, s.filiereId, f.name AS filiereName
         FROM Student s
         JOIN filiere f ON s.filiereId = f.id_filiere
         WHERE s.email = '$email' AND s.password = '$password'";
 
-$result = $db->query($sql); 
+$result = $db->query($sql);
 
 if (!$result) {
     die("Query failed: " . $db->error);
@@ -29,7 +29,7 @@ if ($result->num_rows > 0) {
         $groupID = $row['groupId'];
         $filiereName = $row['filiereName'];
         
-        // Retrieve course marks
+        
         $marksSql = "SELECT c.CourseName, m.Mark
                      FROM courses c
                      JOIN marks m ON c.id1_course = m.CourseId
@@ -51,8 +51,7 @@ if ($result->num_rows > 0) {
     die("No records found for the provided email and password");
 }
 
-    // Close the database connection
-    $db->close();
+   
 } else {
     // Redirect to the login page if session variables are not set
     header("location: login.php");
@@ -61,13 +60,14 @@ if ($result->num_rows > 0) {
 
 
 if (isset($_GET['logout'])) {
-  // Unset all session variables
+  
   $_SESSION = array();
 
-  // Destroy the session
+  $db->close();
   session_destroy();
 
-  // Redirect to the login page
+
+  
   header("location: ../LoginStudent.php");
   exit();
 }

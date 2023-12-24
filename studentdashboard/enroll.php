@@ -14,8 +14,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
             FROM Student
             WHERE email = '$email' AND password = '$password'";
 
-    $result = $db->query($sql); // Change $conn to $db
-
+    $result = $db->query($sql); 
     if (!$result) {
         die("Query failed: " . $db->error);
     }

@@ -2,7 +2,7 @@
     session_start();
 
     include_once "config.php";
-    include_once "classes/scape.php";
+    include_once "classes/scrape.php";
 
     if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
 
@@ -44,13 +44,13 @@
     }
 
     if (isset($_GET['logout'])) {
-      // Unset all session variables
+      
       $_SESSION = array();
 
-      // Destroy the session
+      
       session_destroy();
       $db->close();
-      // Redirect to the login page
+      
       header("location: ../LoginStudent.php");
       exit();
     }
@@ -115,17 +115,14 @@
             echo "Error: No end date found for the selected course ID.";
             
         }
-        
         mysqli_free_result($resultEndDate);
     } else {
         echo "Error executing the query to fetch the course end date: " . mysqli_error($db);
     }
 
     if (strtotime($formattedDate) <= strtotime($courseEndDate)) {
-        
         $mark = 20;
     } else {
-        
         $mark = max(min(10, -1 + (strtotime($formattedDate) - strtotime($courseEndDate)) / (60*60*24*365)), 10);
     }
 
@@ -141,14 +138,10 @@
       }
 
 
-
-
     }
     ?>
 
 
-
-    ?>
 
     <!DOCTYPE html>
     <html lang="en">
