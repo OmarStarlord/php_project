@@ -69,7 +69,8 @@ final class CurlHttpClient implements HttpClientInterface, LoggerAwareInterface,
             throw new \LogicException('You cannot use the "Symfony\Component\HttpClient\CurlHttpClient" as the "curl" extension is not installed.');
         }
 
-        $this->defaultOptions['buffer'] ??= self::shouldBuffer(...);
+        $this->defaultOptions['buffer'] = $this->defaultOptions['buffer'] ?? self::shouldBuffer(...);
+
 
         if ($defaultOptions) {
             [, $this->defaultOptions] = self::prepareRequest(null, null, $defaultOptions, $this->defaultOptions);

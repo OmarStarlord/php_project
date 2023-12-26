@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Role Selection</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,53 +16,39 @@
             height: 100vh;
         }
 
-        form {
+        .container {
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
+            text-align: center;
         }
 
-        input {
+        button {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
-        }
-
-        input[type="submit"] {
+            cursor: pointer;
             background-color: #4caf50;
             color: #fff;
-            cursor: pointer;
+            font-size: 16px;
         }
 
-        input[type="submit"]:hover {
+        button:hover {
             background-color: #45a049;
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <form method="post" action="">
-        <h2>Login</h2>
-        Email: <input type="text" name="email"><br>
-        Password: <input type="password" name="password"><br>
-        <input type="submit" value="Login">
-        <?php if (isset($error)) : ?>
-            <p class="error"><?php echo $error; ?></p>
-        <?php endif; ?>
-    </form>
+    <div class="container">
+        <h2>Select Your Role</h2>
+        <button onclick="window.location.href='LoginAdmin.php'">Admin</button>
+        <button onclick="window.location.href='LoginProfessor.php'">Professor</button>
+        <button onclick="window.location.href='LoginStudent.php'">Student</button>
+    </div>
 </body>
 </html>
