@@ -3,7 +3,7 @@
 SCHOOL PROJECT TO HANDLE STUDENT'S PROGRESS IN COURSERA
 
 Overview
-This school project aims to create a Student Progress Tracker for Coursera. The goal is to develop a user-friendly system for monitoring students' progress in Coursera courses, including course completion, grades, and overall performance.
+This school project aims to create a Student Progress Tracker for Coursera. The goal is to develop a user-friendly Web Platform for monitoring students' progress in Coursera courses, including course completion, grades, and overall performance.
 
 Features
 Course Information:
