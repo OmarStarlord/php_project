@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Include class files
+
 include_once "classes/database.php";
 include_once "classes/admin.php";
 include_once "classes/student.php";
@@ -215,7 +215,7 @@ exit();
           <h4 class="card-title">Add New Student</h4>
 
           <!-- Student Form -->
-<form method="post"> <!-- Replace "process_student.php" with your actual form processing script -->
+<form method="post"> 
 
 <!-- Email -->
 <div class="form-group">
@@ -262,7 +262,7 @@ exit();
   <option value="3">Génie Industriel</option>
   <option value="4">Génie Civil, Bâtiments et Travaux Publics (BTP)</option>
   <option value="5">Ingénierie Automatismes et Informatique Industrielle</option>
-  <!-- Add more options as needed -->
+  
 </select>
 </div>
 

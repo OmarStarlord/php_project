@@ -1,14 +1,14 @@
 <?php
 session_start();
 
-include_once "config.php"; // Adjust the path as needed
+include_once "config.php"; 
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-    // Retrieve email and password from session variables
+    
     $email = $_SESSION['login_email'];
     $password = $_SESSION['login_password'];
 
-    // Fetch teacher information based on email and password
+    
     $sql_teacher = "SELECT id_prof, nom_prof, prenom_prof, email, academic_year_id, filiere_id
                     FROM professor
                     WHERE email = '$email' AND password = '$password'";
@@ -28,7 +28,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         $academicYearId = $row_teacher['academic_year_id'];
         $filiereId = $row_teacher['filiere_id'];
 
-        // Fetch students based on academic year, filiere, and teacher
+        
         $sql_students = "SELECT id_student, nom_student, prenom_student, email, GroupId, AcademicYear, FiliereId
                  FROM student
                  WHERE AcademicYear = '$academicYearId' AND FiliereId = '$filiereId' AND GroupId = '$teacherId'
@@ -48,7 +48,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
                   FROM complaint c
                   JOIN student s ON c.student_id = s.id_student
                   WHERE s.AcademicYear = '$academicYearId' AND s.FiliereId = '$filiereId'
-                  ORDER BY c.complaint_id DESC";  // Change the ORDER BY clause as needed
+                  ORDER BY c.complaint_id DESC";  
 
 $result_complaints = $db->query($sql_complaints);
 
@@ -59,7 +59,7 @@ if (!$result_complaints) {
 
     
 } else {
-    // Redirect to the login page if session variables are not set
+    
     header("location: login.php");
     exit();
 }
@@ -297,7 +297,7 @@ if (isset($_GET['logout'])) {
                                     echo "<td>{$row_complaint['student_id']}</td>";
                                     echo "<td>{$row_complaint['course_id']}</td>";
                                     echo "<td>{$row_complaint['complaint_text']}</td>";
-                                    echo "<td>{$row_complaint['complaint_image']}</td>";
+                                    echo "<td><img src='display_image.php?complaint_id={$row_complaint['complaint_id']}' width='100'></td>";
                                     echo "<td>{$row_complaint['academic_year']}</td>";
                                     echo "<td>{$row_complaint['filiere']}</td>";
                                     echo "</tr>";

@@ -5,11 +5,11 @@ session_start();
 include_once "config.php";
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-  // Retrieve username and password from session variables
+  
   $username = $_SESSION['login_email'];
   $password = $_SESSION['login_password'];
 
-  // Fetch admin information based on username and password
+  
   $sql = "SELECT username, password
           FROM admin
           WHERE username = ? AND password = ?";
@@ -37,20 +37,20 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
 
   
 } else {
-  // Redirect to the login page if session variables are not set
+  
   header("location: login.php");
   exit();
 }
-// ADD COURSE to database
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  // Retrieve course information from form submission
+  
   $courseName = $_POST['courseName'];
   $endDate = $_POST['endDate'];
   $filiereId = $_POST['filiereId'];
   $academicYear = $_POST['academicYear'];
 
 
-  // Insert course information into database
+  
   $sql = "INSERT INTO courses (courseName, end_Date, filiereId, academicYear)
           VALUES (?, ?, ? , ?)";
   
@@ -71,13 +71,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 if (isset($_GET['logout'])) {
-// Unset all session variables
+
 $_SESSION = array();
 $db->close();
-// Destroy the session
+
 session_destroy();
 
-// Redirect to the login page
+
 header("location: ../LoginAdmin.php");
 exit();
 }
@@ -248,9 +248,7 @@ exit();
       <div class="main-panel">
 <div class="content-wrapper">
 
-  <!-- Existing content -->
-
-  <!-- New content: Form for entering a new student -->
+ 
   <div class="row">
   <div class="col-md-12 grid-margin stretch-card">
       <div class="card">
@@ -277,7 +275,7 @@ exit();
       <label for="academicYear">Academic Year (1 to 5):</label>
       <input type="number" class="form-control" id="academicYear" name="academicYear" min="1" max="5" required>
   </div>
-  <!-- FiliereId (Dropdown for selecting Filiere) -->
+  
 <div class="form-group">
 <label for="filiereId">Filiere:</label>
 <select class="form-control" id="filiereId" name="filiereId" required>
@@ -286,11 +284,11 @@ exit();
   <option value="3">Génie Industriel</option>
   <option value="4">Génie Civil, Bâtiments et Travaux Publics (BTP)</option>
   <option value="5">Ingénierie Automatismes et Informatique Industrielle</option>
-  <!-- Add more options as needed -->
+  >
 </select>
 </div>
 
-  <!-- Submit button -->
+  =
   <button type="submit" class="btn btn-primary">Submit</button>
 
 </form>

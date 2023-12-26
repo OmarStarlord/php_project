@@ -1,14 +1,14 @@
 <?php
 session_start();
 
-include_once "config.php"; // Adjust the path as needed
+include_once "config.php"; 
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-    // Retrieve email and password from session variables
+    
     $email = $_SESSION['login_email'];
     $password = $_SESSION['login_password'];
 
-    // Fetch teacher information based on email and password
+    
     $sql_teacher = "SELECT id_prof, nom_prof, prenom_prof, email, academic_year_id, filiere_id
                     FROM professor
                     WHERE email = '$email' AND password = '$password'";
@@ -31,25 +31,34 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
 $result_students = null;
 
         if (isset($_GET['selectedGroup'])) {
+    
     $selectedGroup = $db->real_escape_string($_GET['selectedGroup']);
 
-    // Modify the SQL query to include the selected group
-    $sql_students = "SELECT id_student, nom_student, prenom_student, email, GroupId, AcademicYear, FiliereId
-                     FROM student
-                     WHERE AcademicYear = '$academicYearId' AND FiliereId = '$filiereId' AND GroupId = '$selectedGroup'
-                     ORDER BY GroupId";
+    
+    $sql_students = "SELECT s.id_student, s.nom_student, s.prenom_student, s.email, s.GroupId, s.AcademicYear, s.FiliereId,
+                 COUNT(m.CourseId) AS enrolledCourses,
+                 AVG(m.Mark) AS averageMark
+                 FROM student s
+                 LEFT JOIN marks m ON s.id_student = m.StudentId
+                 WHERE s.AcademicYear = '$academicYearId' AND s.FiliereId = '$filiereId' AND s.GroupId = '$selectedGroup'
+                 GROUP BY s.id_student
+                 ORDER BY s.GroupId";
 
     $result_students = $db->query($sql_students);
 
-    if (!$result_students) {
-        die("Query failed: " . $db->error);
-    }
+   if ($result_students === false) {
+    
+    die("Query failed: " . $db->error);
+} elseif ($result_students === null) {
+    
+    die("No records returned from the query.");
+}
 }
     } else {
         die("No records found for the provided email and password");
     }
 
-    // Close the database connection
+    
     $db->close();
 } else {
     
@@ -283,6 +292,8 @@ if (isset($_GET['logout'])) {
                             <th>Academic Year</th>
                             <th>Filiere</th>
                             <th>Group</th>
+                            <th>Enrolled Courses</th>
+                             <th>Average Mark</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -294,6 +305,8 @@ if (isset($_GET['logout'])) {
                             echo "<td>" . $row_student['AcademicYear'] . "</td>";
                             echo "<td>" . $row_student['FiliereId'] . "</td>";
                             echo "<td>" . $row_student['GroupId'] . "</td>";
+                            echo "<td>" . $row_student['enrolledCourses'] . "</td>";
+                            echo "<td>" . number_format($row_student['averageMark'], 2) . "</td>";
                             echo "</tr>";
                         }
                         ?>

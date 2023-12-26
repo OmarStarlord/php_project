@@ -2,19 +2,19 @@
 session_start();
 
 
-include_once "config.php"; // Adjust the path as needed
+include_once "config.php"; 
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-    // Retrieve email and password from session variables
+    
     $email = $_SESSION['login_email'];
     $password = $_SESSION['login_password'];
 
-    // Fetch student information based on email and password
+    
     $sql = "SELECT id_student, nom_student, prenom_student, AcademicYear, groupId
             FROM Student
             WHERE email = '$email' AND password = '$password'";
 
-    $result = $db->query($sql); // Change $conn to $db
+    $result = $db->query($sql); 
 
     if (!$result) {
         die("Query failed: " . $db->error);
@@ -30,16 +30,16 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
         die("No records found for the provided email and password");
     }
 
-    // Close the database connection
+    
     $db->close();
 } else {
-    // Redirect to the login page if session variables are not set
+    
     header("location: login.php");
     exit();
 }
 
 if (isset($_GET['logout'])) {
-  // Unset all session variables
+  
   $_SESSION = array();
 
   // Destroy the session

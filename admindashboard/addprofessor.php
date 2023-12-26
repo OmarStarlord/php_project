@@ -1,14 +1,14 @@
 <?php
 session_start();
 
-include_once "config.php"; // Adjust the path as needed
+include_once "config.php"; 
 
 if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
-  // Retrieve username and password from session variables
+  
   $username = $_SESSION['login_email'];
   $password = $_SESSION['login_password'];
 
-  // Fetch admin information based on username and password
+  
   $sql = "SELECT username, password
           FROM admin
           WHERE username = ? AND password = ?";
@@ -24,7 +24,7 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
           while ($row = $result->fetch_assoc()) {
               $adminId = $row['username'];
               $password = $row['password'];
-              // Retrieve other columns as needed
+              
           }
       } else {
           die("No records found for the provided username and password");
@@ -37,14 +37,14 @@ if (isset($_SESSION['login_email']) && isset($_SESSION['login_password'])) {
 
   
 } else {
-  // Redirect to the login page if session variables are not set
+  
   header("location: ../LoginAdmin.php");
   exit();
 }
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST"){
-  // Retrieve form data
+  
   $nom = trim($_POST["nom"]);
   $prenom = trim($_POST["prenom"]);
   $password = trim($_POST["password"]);
@@ -53,18 +53,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
   $filiereId = trim($_POST["filiereId"]);
 
 
-  // Prepare an INSERT statement
+  
   $sql = "INSERT INTO professor (nom_prof , prenom_prof , password, email, filiere_id, academic_year_id ) VALUES (?, ?, ?, ?, ?, ?)";
 
   $stmt = $db->prepare($sql);
 
   if ($stmt) {
-      // Bind variables to the prepared statement as parameters
+      
       $stmt->bind_param("ssssii", $nom, $prenom, $password, $email , $filiereId, $academicYear);
 
-      // Attempt to execute the prepared statement
+      
       if ($stmt->execute()) {
-          // Redirect to the login page
+          
           header("location: index.php");
           exit();
       } else {
@@ -305,7 +305,7 @@ exit();
   <option value="3">Génie Industriel</option>
   <option value="4">Génie Civil, Bâtiments et Travaux Publics (BTP)</option>
   <option value="5">Ingénierie Automatismes et Informatique Industrielle</option>
-  <!-- Add more options as needed -->
+  
 </select>
 </div>
 
