@@ -35,5 +35,4 @@ Enhance security measures.
 Contributor:
 OMAR LIDALT 
 
-Acknowledgments
-Thanks to Professor Amine ZEGUENDRY for guidance.
+
